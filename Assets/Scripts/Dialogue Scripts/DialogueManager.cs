@@ -99,6 +99,8 @@ public class DialogueManager : MonoBehaviour {
     //Coroutine for displaying sentences.
     private IEnumerator TypeSentence (string sentence)
     {
+        //Deactivate the continue button for the duration
+        continueButton.SetActive(false);
         dialogueText.text = "";
         foreach (char letter in sentence.ToCharArray())
         {
