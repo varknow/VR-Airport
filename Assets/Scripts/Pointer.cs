@@ -30,7 +30,7 @@ public class Pointer : MonoBehaviour
         Vector3 endposition = transform.position + (transform.forward * targetLength);
 
         //Or based on hit
-        if (hit.collider == null)
+        if (hit.collider != null)
         {
             endposition = hit.point;
         }
@@ -40,7 +40,7 @@ public class Pointer : MonoBehaviour
 
         //Set linerenderer
         m_LineRenderer.SetPosition(0, transform.position);
-        m_LineRenderer.SetPosition(1, transform.position);
+        m_LineRenderer.SetPosition(1, endposition);
     }
 
     private RaycastHit CreateRaycast(float length)
