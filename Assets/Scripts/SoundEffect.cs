@@ -6,6 +6,8 @@ public class SoundEffect
 {
 
     public AudioClip[] clips;
+    [Range(0, 2)]
+    public float pitch = 1;
 
     public AudioSource source;
 
@@ -28,6 +30,7 @@ public class SoundEffect
     public void play()
     {
         source.clip = getFirstClip();
+        source.pitch = pitch;
         if (!source.isPlaying)
         source.Play();
     }

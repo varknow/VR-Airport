@@ -5,10 +5,11 @@ public class SoundEffectsManger : MonoBehaviour
 {
     public SoundEffect[] Effcets;
 
-    public void play(string n)
+    public SoundEffect play(string n)
     {
         var effect = Array.Find(Effcets, Effects => Effects.name == n);
         effect.play();
+        return effect;
 
     }
 
@@ -21,5 +22,16 @@ public class SoundEffectsManger : MonoBehaviour
     internal void play(int index)
     {
         throw new NotImplementedException();
+    }
+    
+    public void PlaySoundEffect(string name)
+    {
+        play(name);
+    }
+    
+    public void PlayDialogueSound(string name)
+    {
+        var effect = play(name);
+        FindObjectOfType<DialogueManager>().soundClip = effect.clips[0];
     }
 }
