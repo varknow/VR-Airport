@@ -21,7 +21,6 @@ public class HumanOperator : MonoBehaviour
     public SoundEffectsManger Sfx;
     
     private VARKnowAgent varKnowAgent;
-    private VarknowAgent_second varknowAgentSecond;
 
     public DialogueTrigger dialogueTrigger;
 
@@ -29,7 +28,6 @@ public class HumanOperator : MonoBehaviour
     void Start()
     {
         varKnowAgent = FindObjectOfType<VARKnowAgent>();
-        varknowAgentSecond = FindObjectOfType<VarknowAgent_second>();
     }
 
     // Update is called once per frame
@@ -78,14 +76,9 @@ private void AnswerCommand(bool answer)
             DisplayWrongAnswer();
         }
 
-        if (varKnowAgent != null)
-        {
-            varKnowAgent.Disappear();
-        }
-        else
-        {
-            varknowAgentSecond.Disappear();
-        }
+
+        varKnowAgent.Disappear();
+
         
         DialogueManager.instance.DisplayNextSentence(repeat: !answer);
         DialogueManager.instance.PerformAfterEvent(repeat: !answer);

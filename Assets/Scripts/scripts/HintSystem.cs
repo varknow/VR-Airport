@@ -6,6 +6,16 @@ using UnityEngine.UI;
 
 public class HintSystem : MonoBehaviour
 {
+
+    #region Singleton
+    public static HintSystem instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+    #endregion
+
     public int HintPoint;
     public Text HintPlaceHoler;
     public string CurrentHint { get; private set; }

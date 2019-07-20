@@ -19,7 +19,7 @@ public class DialogueManager : MonoBehaviour {
     private Text nameText;
     private Text dialogueText;
 
-    public HintSystem hintSystem;  //TODO : Singleton
+    //public HintSystem hintSystem;  //TODO : Singleton
 
     //It is optimal for the sentence and events to be the same size.
     private Queue<DialogueSentence> sentences;
@@ -128,8 +128,8 @@ public class DialogueManager : MonoBehaviour {
         if (!repeat)
         {
             currentDialogueSentence = sentences.Dequeue();
-            hintSystem.SetHint(currentDialogueSentence.HintText);
-            hintSystem.SetAdditionalHintArray(currentDialogueSentence.AddtionalHints);
+            HintSystem.instance.SetHint(currentDialogueSentence.HintText);
+            HintSystem.instance.SetAdditionalHintArray(currentDialogueSentence.AddtionalHints);
             if (!CoroutineIsBusy)
             {
                 StartCoroutine(TypeSentences(currentDialogueSentence.Text));
