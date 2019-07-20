@@ -10,7 +10,5 @@ public class Dialogue {
   
     public DialogueSentence[] sentences;
 
-    public UnityEvent[] AfterDialogueEvents;
-
     public UnityEvent EndOfDialogueEvents;
 }

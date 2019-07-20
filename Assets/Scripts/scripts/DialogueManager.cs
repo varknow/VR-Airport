@@ -23,14 +23,14 @@ public class DialogueManager : MonoBehaviour {
 
     //It is optimal for the sentence and events to be the same size.
     private Queue<DialogueSentence> sentences;
-    private Queue<UnityEvent> events;
+    //private Queue<UnityEvent> events;
 
     private bool CoroutineIsBusy = false;
 
     private DialogueSentence currentDialogueSentence;
     private UnityEvent currentDialogueEvent;
 
-    public UnityEvent endOfDialogueEvents;
+    private UnityEvent endOfDialogueEvents;
 
 
 //    public GameObject continueButton;
@@ -40,7 +40,7 @@ public class DialogueManager : MonoBehaviour {
 
     void Start () {
         sentences = new Queue<DialogueSentence>();
-        events = new Queue<UnityEvent>();
+        //events = new Queue<UnityEvent>();
         instance = this;
 	}
 
@@ -49,6 +49,7 @@ public class DialogueManager : MonoBehaviour {
         this.dialogueText = dialogueText;
         if (nameText != null) this.nameText = nameText;
     }
+
 
     //called by DialogueTrigger
     public void StartDialogue(Dialogue dialogue)
@@ -64,108 +65,68 @@ public class DialogueManager : MonoBehaviour {
         {
             sentences.Enqueue(sentence);
         }
-
-        foreach (UnityEvent afterEvent in dialogue.AfterDialogueEvents)
-        {
-            events.Enqueue(afterEvent);
-        }
-
         
         if (dialogue.EndOfDialogueEvents != null)
         {
             this.endOfDialogueEvents = dialogue.EndOfDialogueEvents;
         }
+
         if (!CoroutineIsBusy)
         {
             DisplayNextSentence();
-            PerformAfterEvent();
-
         }
     }
 
-
-    //Pop the event queue
-    public void PerformAfterEvent(bool repeat = false)
+    public void PerformCurrentEvent()
     {
-        if (events.Count == 0 && !repeat)
+        if (currentDialogueEvent != null)
         {
-            Debug.LogWarning("Event Queue emptied");
-           return;
+            currentDialogueEvent.Invoke();
         }
-
-
-        if (!repeat)
-        {
-            currentDialogueEvent = events.Dequeue();
-            if(currentDialogueEvent != null)
-            {
-                currentDialogueEvent.Invoke();
-            }
-        }
-        
-        else
-        {
-            
-            if(currentDialogueEvent != null)
-            {
-                currentDialogueEvent.Invoke();
-            }
-
-        }
-        
     }
 
 
     //Pop the sentence queue
-    public void DisplayNextSentence(bool repeat = false)
+    public void DisplayNextSentence()
     {
-        if(sentences.Count == 0 && !repeat)
+        if(sentences.Count == 0)
         {
             EndDialogue();
             return;
         }
 
-        if (!repeat)
-        {
-            currentDialogueSentence = sentences.Dequeue();
-            HintSystem.instance.SetHint(currentDialogueSentence.HintText);
-            HintSystem.instance.SetAdditionalHintArray(currentDialogueSentence.AddtionalHints);
-            if (!CoroutineIsBusy)
-            {
-                StartCoroutine(TypeSentences(currentDialogueSentence.Text));
+        currentDialogueSentence = sentences.Dequeue();
+        currentDialogueEvent = currentDialogueSentence.afterDialogueEvent;
+        HintSystem.instance.SetHint(currentDialogueSentence.HintText);
+        HintSystem.instance.SetAdditionalHintArray(currentDialogueSentence.AddtionalHints);
 
-            }
-        }
-        else
-        {
-            if (!CoroutineIsBusy)
-            {
-                StartCoroutine(TypeSentences(currentDialogueSentence.Text));
+        StartCoroutine(TypeSentences(currentDialogueSentence.Text));
+        PerformCurrentEvent();
+    }
 
-            }
-        }
-
-        
-        
+    public void DisplayCurrentSentence()
+    {
+        StartCoroutine(TypeSentences(currentDialogueSentence.Text));
     }
 
     //Coroutine for displaying sentences.
     private IEnumerator TypeSentences (string sentence)
     {
-        CoroutineIsBusy = true;
-        dialogueText.text = "";
-        foreach (char letter in sentence)
+        if (!CoroutineIsBusy)
         {
-            //display each letter with 0.01 second delay
-            dialogueText.text += letter;
-//            yield return null;
-            yield return new WaitForSeconds(0.01f);
+            CoroutineIsBusy = true;
+            dialogueText.text = "";
+            foreach (char letter in sentence)
+            {
+                //display each letter with 0.01 second delay
+                dialogueText.text += letter;
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            //AfterSoundEffect();
+            CoroutineIsBusy = false;
+            HumanOperator.instance.DisplayRecording();
         }
-
-
-        //        AfterSoundEffect();
-        CoroutineIsBusy = false;
-        FindObjectOfType<HumanOperator>().DisplayRecording();
     }
     
     
@@ -178,12 +139,13 @@ public class DialogueManager : MonoBehaviour {
     IEnumerator PerformEventAfterSoundEffect(AudioClip audio)
     {
         yield return new WaitForSeconds(audio.length);
-        FindObjectOfType<HumanOperator>().DisplayRecording();
+        HumanOperator.instance.DisplayRecording();
     }
     //Performed after there are no more sentences.
     public void EndDialogue()
     {
         endOfDialogueEvents.Invoke();
+        HumanOperator.instance.dialogueTrigger = null;
     }
 
 

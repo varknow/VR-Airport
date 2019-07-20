@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,12 +7,19 @@ using UnityEngine;
 public class HumanOperator : MonoBehaviour
 {
 
+    #region Singleton
+    public static HumanOperator instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+    #endregion
+
     //edit script begin
     public GameObject RecordIcon;
     public GameObject CorrectIcon;
     public GameObject WrongIcon;
-    public GameObject StartButton;
-    public GameObject DialogueCavas;
 
     //edit script end
     public KeyCode CorrectAnswerKey = KeyCode.T;
@@ -20,7 +28,7 @@ public class HumanOperator : MonoBehaviour
 
     public SoundEffectsManger Sfx;
     
-    private VARKnowAgent varKnowAgent;
+    public VARKnowAgent varKnowAgent;
 
     public DialogueTrigger dialogueTrigger;
 
@@ -38,8 +46,6 @@ public class HumanOperator : MonoBehaviour
         if (Input.GetKeyDown(StartDialogueKey))
         {
             dialogueTrigger.StartDialogue();
-            StartButton.SetActive(true);
-            DialogueCavas.SetActive(true);
         }
     }
     public void SetDialogueTrigger(DialogueTrigger trigger)
@@ -66,44 +72,68 @@ private void AnswerCommand(bool answer)
         if (answer)
         {
             Sfx.PlaySoundEffect("correct");
-            
+            DialogueManager.instance.DisplayNextSentence();
             DisplayCorrectAnswer();
         }
         else
         {
             Sfx.PlaySoundEffect("wrong");
-
+            DialogueManager.instance.DisplayCurrentSentence();
             DisplayWrongAnswer();
         }
 
-
-        varKnowAgent.Disappear();
+        if(varKnowAgent != null)
+        {
+            varKnowAgent.Disappear();
+        }
+        
 
         
-        DialogueManager.instance.DisplayNextSentence(repeat: !answer);
-        DialogueManager.instance.PerformAfterEvent(repeat: !answer);
+        //DialogueManager.instance.DisplayNextSentence(repeat: !answer);
+        //DialogueManager.instance.PerformNextEvent(repeat: !answer);
     }
 
     private void DisplayCorrectAnswer()
     {
-        RecordIcon.SetActive(false);
-        WrongIcon.SetActive(false);
-        CorrectIcon.SetActive(true);
-
+        try
+        {
+            RecordIcon.SetActive(false);
+            WrongIcon.SetActive(false);
+            CorrectIcon.SetActive(true);
+        }
+        catch (NullReferenceException)
+        {
+            Debug.LogWarning("Record Icon/Wrong Icon/Correct Icon not set");
+        }
+        
     }
 
     private void DisplayWrongAnswer()
     {
-        CorrectIcon.SetActive(false);
-        RecordIcon.SetActive(false);
-        WrongIcon.SetActive(true);
+        try
+        {
+            RecordIcon.SetActive(false);
+            WrongIcon.SetActive(true);
+            CorrectIcon.SetActive(false);
+        }
+        catch (NullReferenceException)
+        {
+            Debug.LogWarning("Record Icon/Wrong Icon/Correct Icon not set");
+        }
     }
 
     public void DisplayRecording()
     {
-        CorrectIcon.SetActive(false);
-        WrongIcon.SetActive(false);
-        RecordIcon.SetActive(true);
+        try
+        {
+            RecordIcon.SetActive(true);
+            WrongIcon.SetActive(false);
+            CorrectIcon.SetActive(false);
+        }
+        catch (NullReferenceException)
+        {
+            Debug.LogWarning("Record Icon/Wrong Icon/Correct Icon not set");
+        }
     }
     
     

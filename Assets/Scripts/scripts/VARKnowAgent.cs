@@ -76,35 +76,12 @@ public class VARKnowAgent : MonoBehaviour
     }
     public void Appear()
     {
-        if(this.name == "Varknow_AIRPORT")
-        {
-            Avatar.SetActive(true);
-            transform.parent = SpawnPoint;
-            transform.localPosition = Vector3.zero;
-            transform.rotation = SpawnPoint.rotation;
-            canvas.gameObject.SetActive(true);
 
-
-            //canvas.gameObject.SetActive(true);
-            //canvas.transform.LookAt(PlayerToLook);
-            //canvas.transform.eulerAngles = new Vector3(0, canvas.transform.rotation.eulerAngles.y, 0);
-        }
-        else
-        {
-            OnHint = true;
-            transform.position = SpawnPoint.position;
-            //        animator.SetTrigger(AppearAnimTrigger);        
-            Avatar.SetActive(true);
-        }
-
-
+        OnHint = true;
+        transform.position = SpawnPoint.position;
+//      animator.SetTrigger(AppearAnimTrigger);        
+        Avatar.SetActive(true);
         
-//        transform.parent = SpawnPoint;
-//        transform.localPosition = Vector3.zero;
-//        transform.rotation = SpawnPoint.rotation;
-//        canvas.gameObject.SetActive(true);
-//        canvas.transform.LookAt(PlayerToLook);
-//        canvas.transform.eulerAngles = new Vector3(0, canvas.transform.rotation.eulerAngles.y, 0);
 
 
         GetCurrentHint();
